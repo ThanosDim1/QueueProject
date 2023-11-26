@@ -1,35 +1,42 @@
 import java.util.Scanner;
 
-public  class PrefixToInfix {
+public class PrefixToInfix {
     static StringDoubleEndedQueueImpl<String> stack = new StringDoubleEndedQueueImpl<>();
+
     static boolean isOperator(char c) {
         return c == '+' || c == '-' || c == '*' || c == '/';
     }
 
-    static boolean prefixToInfix(String prefix) {
+    static boolean isValidOperand(char c) {
+        return Character.isDigit(c);
+    }
 
-        for (int i = prefix.length() - 1; i >= 0; i--) {
-            char c = prefix.charAt(i);
+    static boolean isValidInfix(String infix) {
+        int operandCount = 0;
+        int operatorCount = 0;
+
+        for (int i = infix.length() - 1; i >= 0; i--) {
+            char c = infix.charAt(i);
+
             if (isOperator(c)) {
-                String s1 = stack.removeFirst();
-                String s2 = stack.removeFirst();
-                String temp = "(" + s1 + c + s2 + ")";
-                stack.addFirst(temp);
-            }
-            else {
-                stack.addFirst(c + "");
+                operatorCount++;
+            } else if (isValidOperand(c)) {
+                operandCount++;
+            } else {
+                return false; // Invalid character in the infix expression
             }
         }
-        return stack.size() == 1;
-
+        // For a valid infix expression, the number of operators should be one less than the number of operands
+        return operandCount == operatorCount + 1;
     }
-    public static void main(String[] args){
+
+    public static void main(String[] args) {
         Scanner sc = new Scanner(System.in);
-        System.out.println("Enter the prefix expression: ");
-        String prefix = sc.nextLine();
-        while (!prefixToInfix(prefix)){
-            System.out.println("The prefix expression you entered is wrong\nEnter the prefix expression: ");
-            prefix = sc.nextLine();
+        System.out.println("Enter the infix expression: ");
+        String infix = sc.nextLine();
+        while (!isValidInfix(infix)) {
+            System.out.println("The infix expression you entered is invalid\nEnter the infix expression: ");
+            infix = sc.nextLine();
         }
         System.out.println("The infix expression is: " + stack.removeFirst());
     }
